@@ -12,9 +12,13 @@ const mime = {
     '.css':'text/css'
 }
 
-const server = http.createServer((req,res)=>{
+const server = http.createServer(serverStatic);
+
+server.listen(3000);
+
+function serverStatic(){
     // 获取连接的path部分
-    let src = url.parse(req.url).pathname;
+    let src = url.parse(arguments[0].url).pathname;
     // 获取path部分的文件后缀
     let extname = path.extname(src);
     // 如果文件扩展名存在则执行文件读取输出
@@ -23,28 +27,26 @@ const server = http.createServer((req,res)=>{
         fs.readFile('./public/'+src,(err,data)=>{
             // 不存在返回404
             if(err){
-                res.writeHead(404,{'content-type':mime[extname]});
-                res.end('Not Found');
+                arguments[1].writeHead(404,{'content-type':mime[extname]});
+                arguments[1].end('Not Found');
+                return;
             }
             // 存在返回数据
-            res.writeHead(200,{'content-type':mime[extname]});
-            res.end(data);
+            arguments[1].writeHead(200,{'content-type':mime[extname]});
+            arguments[1].end(data);
         });
     }else{
         // 如果没有文件扩展名,则按文件夹处理,读取改文件夹下的index.html文件
         fs.readFile('./public/'+src+'/index.html',(err,data)=>{
             // 如果不存在,返回404
             if(err){
-                res.writeHead(404,{'content-type':mime[extname]});
-                res.end('Not Found');
+                arguments[1].writeHead(404,{'content-type':mime[extname]});
+                arguments[1].end('Not Found');
                 return;
             }
             // 如果存在,返回数据
-            res.writeHead(200,{'content-type':mime[extname]});
-            res.end(data);
+            arguments[1].writeHead(200,{'content-type':mime[extname]});
+            arguments[1].end(data);
         });
     }
-});
-
-server.listen(3000);
-
+}
