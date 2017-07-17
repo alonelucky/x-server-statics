@@ -2,7 +2,6 @@
  * Created by Administrator on 2017/7/17.
  */
 
-const http = require('http');
 const url = require('url');
 const path = require('path');
 const fs = require('fs');
@@ -12,9 +11,7 @@ const mime = {
     '.css':'text/css'
 }
 
-const server = http.createServer(serverStatic);
-
-server.listen(3000);
+module.exports=serverStatic;
 
 function serverStatic(){
     // 获取连接的path部分
@@ -24,7 +21,7 @@ function serverStatic(){
     // 如果文件扩展名存在则执行文件读取输出
     if(extname){
         // 读取对应路径下的文件
-        fs.readFile('./public/'+src,(err,data)=>{
+        fs.readFile(arguments[2]+'/'+src,(err,data)=>{
             // 不存在返回404
             if(err){
                 arguments[1].writeHead(404,{'content-type':mime[extname]});
@@ -37,7 +34,7 @@ function serverStatic(){
         });
     }else{
         // 如果没有文件扩展名,则按文件夹处理,读取改文件夹下的index.html文件
-        fs.readFile('./public/'+src+'/index.html',(err,data)=>{
+        fs.readFile(arguments[2]+'/'+src+'/index.html',(err,data)=>{
             // 如果不存在,返回404
             if(err){
                 arguments[1].writeHead(404,{'content-type':mime[extname]});
